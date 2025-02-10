@@ -1,0 +1,33 @@
+function [isi,acg] = ISI_ACG(ST)%SpikeTrain in s
+%Output ISI ACG graphs for a given spike train, time 50ms/+-50ms with 0.5ms
+%gap
+ST=ST*1000 %convert to ms unit
+
+ISI=diff(ST);
+%ACG
+ ACG=[];
+for i=1:numel(ST)
+    dis=ST-ST(i);
+   
+   ACG=[ACG dis(dis>-50 & dis<50)];
+end
+
+%ISI histograms
+
+
+isi=figure
+hist(ISI,-50:0.5:50,'FaceColor',[0.2540 0.1840 0.5560]);
+title('ISI hisograms','FontSize',24);
+xlabel('ISI (ms)','FontSize',24);
+ylabel('Count','FontSize',24);
+set(gcf,'FontSize',24);
+
+acg=figure
+hist(ACG,-50:0.5:50,'FaceColor',[0.4940 0.1840 0.5560]);
+title('ACG hisograms','FontSize',24);
+xlabel('ACG (ms)','FontSize',24);
+ylabel('Count','FontSize',24);
+set(gcf,'FontSize',24)
+
+end
+

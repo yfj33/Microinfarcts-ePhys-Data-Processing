@@ -1,0 +1,53 @@
+%compute the rejected cluster number and cell type ratio using Jiaao's npz
+%file after adjusting parameters using old pipelines
+
+%%read cluster rejection mask from folder of interest
+folders=dir(pwd);
+folders_name={folders.name};
+FOI=cellfun(@(y) y(1)=='s',folders_name);
+FOI_name=folders_name(FOI);
+
+for n=1:numel(FOI_name)
+animal_folder=fullfile(pwd,FOI_name{n});
+mask_path=fullfile(animal_folder,'cluster_rejection_mask.mat');
+rejection_mask=load(mask_path);
+SU_mask=rejection_mask.single_unit_mask;
+%CLUSTER NOISE SU
+cluster_num=[1:1:numel(SU_mask)];
+SU_cluster_num=cluster_num(SU_mask);
+Noise_cluster_num=cluster_num(~ismember(cluster_num,SU_cluster_num));
+%output xls file to the folder 
+xlswrite(fullfile(animal_folder,'curation.xlsx'),Noise_cluster_num');
+end
+
+run cell_type_2022.m
+
+%divide the clusters into different folders and do another manual
+%check/visualization
+for n=1:numel(FOI_name)
+animal_folder=fullfile(pwd,FOI_name{n});
+save_path=fullfile(animal_folder,'manual curation results','cell type classification figures');
+save_path_sub1=fullfile(save_path,'narrow interneurons');
+save_path_sub2=fullfile(save_path,'wide interneurons');
+save_path_sub3=fullfile(save_path,'pyramidal interneurons');
+sub_path={save_path_sub1 save_path_sub2 save_path_sub3};
+copy_path=fullfile(animal_folder,'figs_allclus_waveforms');
+
+if ~exist(save_path)
+mkdir(save_path);
+end
+
+for p=1:numel(sub_path)
+ if ~exist(sub_path{p})
+mkdir(sub_path{p});
+ end
+end
+
+
+
+
+
+
+
+end
+
